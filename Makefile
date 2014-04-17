@@ -1,5 +1,5 @@
 all:
-	g++ main.cpp -shared -o mysql-udf-most.so -I /usr/include/mysql
+	g++ main.cpp -shared -o mysql-udf-most.so -I /usr/include/mysql -fPIC
 
 clean:
 	rm -rf *.so
