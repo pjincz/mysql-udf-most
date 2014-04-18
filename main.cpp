@@ -13,12 +13,23 @@ extern "C" {
 	char * most(UDF_INIT *initid, UDF_ARGS *args,
 			  char *result, unsigned long *length,
 			  char *is_null, char *error);
+
+	my_bool most_times_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+	void most_times_clear(UDF_INIT* initid, char* is_null, char *error);
+	void most_times_add(UDF_INIT* initid, UDF_ARGS* args, char* is_null, char *error);
+	void most_times_deinit(UDF_INIT *initid);
+	char * most_times(UDF_INIT *initid, UDF_ARGS *args,
+			  char *result, unsigned long *length,
+			  char *is_null, char *error);
 }
 
 struct UDFMostData
 {
 	std::map<std::string, int> hits;
 };
+
+////////////////////////////////////////////////////////////////////////////////
+// most
 
 my_bool most_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 {
@@ -94,5 +105,54 @@ char * most(UDF_INIT *initid, UDF_ARGS *args,
 		*length = (*itMost).first.size();
 		
 		return result;
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// most_times
+
+my_bool most_times_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
+{
+	return most_init(initid, args, message);
+}
+
+void most_times_clear(UDF_INIT* initid, char* is_null, char *error)
+{
+	return most_clear(initid, is_null, error);
+}
+
+void most_times_add(UDF_INIT* initid, UDF_ARGS* args, char* is_null, char *error)
+{
+	return most_add(initid, args, is_null, error);
+}
+
+void most_times_deinit(UDF_INIT *initid)
+{
+	return most_deinit(initid);
+}
+
+long long most_times(UDF_INIT *initid, UDF_ARGS *args,
+					 char *is_null, char *error)
+{
+	UDFMostData * p = (UDFMostData *)initid->ptr;
+
+	if (p->hits.empty())
+	{
+		*is_null = 1;
+
+		return 0;
+	}
+	else
+	{
+		std::map<std::string, int>::iterator itMost = p->hits.begin();
+		std::map<std::string, int>::iterator it = itMost;
+		++it;
+		for (; it != p->hits.end(); ++it)
+		{
+			if ((*it).second > (*itMost).second)
+				itMost = it;
+		}
+		
+		return (*itMost).second;
 	}
 }
