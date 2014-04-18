@@ -18,8 +18,7 @@ extern "C" {
 	void most_times_clear(UDF_INIT* initid, char* is_null, char *error);
 	void most_times_add(UDF_INIT* initid, UDF_ARGS* args, char* is_null, char *error);
 	void most_times_deinit(UDF_INIT *initid);
-	char * most_times(UDF_INIT *initid, UDF_ARGS *args,
-			  char *result, unsigned long *length,
+	long long most_times(UDF_INIT *initid, UDF_ARGS *args,
 			  char *is_null, char *error);
 }
 
